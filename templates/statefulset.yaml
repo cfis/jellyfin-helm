@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "jellyfin-helm.fullname" . }}
+  {{- with .Values.podAnnotations }}
+  annotations: {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    {{- include "jellyfin-helm.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "jellyfin-helm.fullname" . }}
+  replicas: 1
+  selector:
+    matchLabels:
+    {{- include "jellyfin-helm.labels" . | nindent 6 }}
+  {{- with .Values.strategy }}
+  updateStrategy: {{- toYaml . | nindent 4 }}
+  {{- end }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "jellyfin-helm.labels" . | nindent 8 }}
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext: {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: jellyfin
+          securityContext: {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+          image: "{{ .Values.image.registry }}/{{ .Values.image.account }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8096
+              protocol: TCP
+          livenessProbe:
+            httpGet: &httpProbe
+              port: http
+              path: /health
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet: *httpProbe
+            periodSeconds: 10
+            timeoutSeconds: 10
+          resources: {{- toYaml .Values.resources.jellyfin | nindent 12 }}
+          volumeMounts:
+            {{- range $name, $claim := .Values.persistence }}
+            - name: {{ include "jellyfin-helm.fullname" $ }}-{{ $name }}
+              mountPath: /{{ $name }}
+            {{- end }}
+            {{- range $name, $claim := .Values.mediaVolumes }}
+            - name: {{ include "jellyfin-helm.fullname" $ }}-{{ $name }}
+              mountPath: /media/{{ $name }}
+            {{- end }}
+            # See note below why we need to do this
+            - name: tmpfs
+              mountPath: /tmp
+      {{- with .Values.nodeSelector }}
+      nodeSelector: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        # The docker image does not have a /tmp directory, but we want to disable
+        # writing to the root file system. Thus we have to create a /tmp directory ourselves
+        - name: tmpfs
+          emptyDir:
+            medium: Memory
+            sizeLimit: 10Mi
+  volumeClaimTemplates:
+  {{- range $name, $claim := .Values.persistence }}
+    - metadata:
+        name: {{ include "jellyfin-helm.fullname" $ }}-{{ $name }}
+      spec:
+        storageClassName: {{ $claim.storageClassName }}
+        accessModes: {{- toYaml .accessModes | nindent 10 }}
+        resources: {{- toYaml .resources | nindent 10 }}
+  {{- end }}
+        
+  {{- range $name, $claim := .Values.mediaVolumes }}
+    - metadata:
+        name: {{ include "jellyfin-helm.fullname" $ }}-{{ $name }}
+      spec:
+        storageClassName: {{ $claim.storageClassName }}
+        accessModes: {{- toYaml .accessModes | nindent 10 }}
+        resources: {{- toYaml .resources | nindent 10 }}
+  {{- end }}
