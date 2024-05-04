@@ -77,6 +77,13 @@ spec:
           emptyDir:
             medium: Memory
             sizeLimit: 10Mi
+        {{- range $name, $claim := .Values.mediaVolumes }}
+          {{- if $claim.existingClaim }}
+        - name: {{ include "jellyfin-helm.fullname" $ }}-{{ $name }}
+          persistentVolumeClaim:
+            claimName: {{ $claim.existingClaim }}
+          {{- end }}
+        {{- end }}
   volumeClaimTemplates:
   {{- range $name, $claim := .Values.persistence }}
     - metadata:
@@ -88,10 +95,12 @@ spec:
   {{- end }}
         
   {{- range $name, $claim := .Values.mediaVolumes }}
+    {{- if not $claim.existingClaim }}
     - metadata:
         name: {{ include "jellyfin-helm.fullname" $ }}-{{ $name }}
       spec:
         storageClassName: {{ $claim.storageClassName }}
         accessModes: {{- toYaml .accessModes | nindent 10 }}
         resources: {{- toYaml .resources | nindent 10 }}
+    {{- end }}
   {{- end }}
