@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "jellyfin-helm.fullname" . }}
+  name: {{ include "jellyfin.fullname" . }}
   {{- with .Values.podAnnotations }}
   annotations: {{- toYaml . | nindent 4 }}
   {{- end }}
   labels:
-    {{- include "jellyfin-helm.labels" . | nindent 4 }}
+    {{- include "jellyfin.labels" . | nindent 4 }}
 spec:
-  serviceName: {{ include "jellyfin-helm.fullname" . }}
+  serviceName: {{ include "jellyfin.fullname" . }}
   replicas: 1
   selector:
     matchLabels:
-    {{- include "jellyfin-helm.labels" . | nindent 6 }}
+    {{- include "jellyfin.labels" . | nindent 6 }}
   {{- with .Values.strategy }}
   updateStrategy: {{- toYaml . | nindent 4 }}
   {{- end }}
@@ -22,7 +22,7 @@ spec:
       annotations: {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "jellyfin-helm.labels" . | nindent 8 }}
+        {{- include "jellyfin.labels" . | nindent 8 }}
     spec:
       {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets: {{- toYaml . | nindent 8 }}
@@ -54,11 +54,11 @@ spec:
           resources: {{- toYaml .Values.resources.jellyfin | nindent 12 }}
           volumeMounts:
             {{- range $name, $claim := .Values.persistence }}
-            - name: {{ include "jellyfin-helm.fullname" $ }}-{{ $name }}
+            - name: {{ include "jellyfin.fullname" $ }}-{{ $name }}
               mountPath: /{{ $name }}
             {{- end }}
             {{- range $name, $claim := .Values.mediaVolumes }}
-            - name: {{ include "jellyfin-helm.fullname" $ }}-{{ $name }}
+            - name: {{ include "jellyfin.fullname" $ }}-{{ $name }}
               mountPath: /media/{{ $name }}
             {{- end }}
             # See note below why we need to do this
@@ -82,7 +82,7 @@ spec:
             sizeLimit: 10Mi
         {{- range $name, $claim := .Values.mediaVolumes }}
           {{- if $claim.existingClaim }}
-        - name: {{ include "jellyfin-helm.fullname" $ }}-{{ $name }}
+        - name: {{ include "jellyfin.fullname" $ }}-{{ $name }}
           persistentVolumeClaim:
             claimName: {{ $claim.existingClaim }}
           {{- end }}
@@ -90,7 +90,7 @@ spec:
   volumeClaimTemplates:
   {{- range $name, $claim := .Values.persistence }}
     - metadata:
-        name: {{ include "jellyfin-helm.fullname" $ }}-{{ $name }}
+        name: {{ include "jellyfin.fullname" $ }}-{{ $name }}
       spec:
         storageClassName: {{ $claim.storageClassName }}
         accessModes: {{- toYaml .accessModes | nindent 10 }}
@@ -100,7 +100,7 @@ spec:
   {{- range $name, $claim := .Values.mediaVolumes }}
     {{- if not $claim.existingClaim }}
     - metadata:
-        name: {{ include "jellyfin-helm.fullname" $ }}-{{ $name }}
+        name: {{ include "jellyfin.fullname" $ }}-{{ $name }}
       spec:
         storageClassName: {{ $claim.storageClassName }}
         accessModes: {{- toYaml .accessModes | nindent 10 }}

@@ -2,14 +2,14 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "jellyfin-helm.fullname" . }}
+  name: {{ include "jellyfin.fullname" . }}
   labels:
-    {{- include "jellyfin-helm.labels" . | nindent 4 }}
+    {{- include "jellyfin.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "jellyfin-helm.fullname" . }}
+    name: {{ include "jellyfin.fullname" . }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:
