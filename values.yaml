@@ -163,11 +163,9 @@ serviceAccount:
   automount: true
 
 service:
-  # -- Service type
   type: ClusterIP
-  # -- `web` service port
-  port: 80
-  selectorLabels: {}
+  webport: 80
+  dlnaport: 1900 
  
 ingress:
   # -- Enable ingress resource

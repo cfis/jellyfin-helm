@@ -7,9 +7,13 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
+    - port: {{ .Values.service.webport }}
       targetPort: http
       protocol: TCP
       name: http
+    - port: {{ .Values.service.dlnaport }}
+      targetPort: dlna
+      protocol: UDP
+      name: dlna
   selector:
     {{- include "jellyfin-helm.selectorLabels" . | nindent 4 }}
