@@ -17,7 +17,7 @@ image:
   registry: docker.io
   account: jellyfin
   name: jellyfin
-  tag: "10.9.2"
+  tag: "10.10.7"
   pullPolicy: IfNotPresent
   imagePullSecrets: []
 
