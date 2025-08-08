@@ -163,7 +163,6 @@ serviceAccount:
   automount: true
 
 service:
-  type: ClusterIP
   webport: 80
   dlnaport: 1900 
  
