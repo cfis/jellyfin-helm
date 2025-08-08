@@ -12,8 +12,8 @@ on:
   workflow_dispatch:
 
 env:
-  KUBE_SCORE_VERSION: 1.17.0
-  HELM_VERSION: v3.13.2
+  KUBE_SCORE_VERSION: 1.12.0
+  HELM_VERSION: v3.14.0
 
 concurrency:
   group: ${{ github.ref }}
@@ -64,7 +64,7 @@ jobs:
     strategy:
       matrix:
         # Choose from https://hub.docker.com/r/kindest/node/tags
-        KubeVersion: [ 1.30.10, 1.31.6, 1.32.2]
+        KubeVersion: [ 1.31.9, 1.32.5, 1.33.2]
 
     steps:
       - name: Checkout
