@@ -12,4 +12,11 @@ spec:
       image: busybox
       command: ['wget']
       args: ['{{ include "jellyfin.fullname" . }}:{{ .Values.service.port }}']
+      resources:
+        limits:
+          cpu: "1"
+          memory: 256Mi
+        requests:
+          cpu: "1"
+          memory: 128Mi
   restartPolicy: Never
