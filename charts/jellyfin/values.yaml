@@ -18,7 +18,7 @@ image:
   account: jellyfin
   name: jellyfin
   tag: "10.10.7"
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   imagePullSecrets: []
 
   # -- Additional annotations to apply to the pod.
