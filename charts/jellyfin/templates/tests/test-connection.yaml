@@ -11,7 +11,7 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "jellyfin.fullname" . }}:8096']
+      args: ['{{ include "jellyfin.fullname" . }}:8096/web']
       resources:
         limits:
           cpu: "1"
