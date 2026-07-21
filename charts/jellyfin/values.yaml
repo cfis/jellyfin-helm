@@ -4,11 +4,6 @@ global:
   commonLabels: {}
   # -- Enable global debug mode
   debug: false
-  # -- Reference to one or more secrets to be used when pulling images
-  #    (https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/)
-  imagePullSecrets: []
-  # -- Global Docker image registry
-  imageRegistry: ""
 
 nameOverride: ""
 fullnameOverride: ""
