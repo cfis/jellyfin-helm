@@ -12,7 +12,7 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-    {{- include "jellyfin.labels" . | nindent 6 }}
+    {{- include "jellyfin.selectorLabels" . | nindent 6 }}
   {{- with .Values.strategy }}
   updateStrategy: {{- toYaml . | nindent 4 }}
   {{- end }}
