@@ -70,3 +70,14 @@ regardless of the flag. The flag has been removed. Jellyfin's config and cache
 are stateful and are always persisted.
 
 If your values file sets either key, delete it. No behavior changes as a result.
+
+#### 3. The `global.*` values have been removed
+
+The `global:` block (`global.imageRegistry`, `global.imagePullSecrets`,
+`global.commonLabels`, `global.debug`) has been removed. This chart is only used
+standalone, so the umbrella-chart `global` layer was unused ceremony —
+`imageRegistry` and `commonLabels`/`debug` were never wired to anything.
+
+Image pull secrets now come from `image.imagePullSecrets` instead of
+`global.imagePullSecrets`. If your values file sets `global.imagePullSecrets`,
+move it to `image.imagePullSecrets`; any other `global.*` keys can be deleted.
