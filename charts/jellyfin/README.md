@@ -90,33 +90,11 @@ helm test jellyfin --namespace jellyfin
 helm uninstall jellyfin --namespace jellyfin
 ```
 
-> **Important — read this before relying on your data surviving a reinstall.**
->
-> The PVCs created from `volumeClaimTemplates` (config, cache) and any
-> `mediaVolumes` PVCs are not part of the Helm release, so `helm uninstall`
-> leaves them in place.
->
-> However, this chart is commonly used with **statically pre-provisioned PVs**
-> that use the `Retain` reclaim policy. With `Retain`, once a PVC is removed
-> (e.g. a namespace teardown or manual cleanup) the underlying PV and its data
-> are **kept**, but the PV moves to the `Released` state with a stale
-> `claimRef` — and a `Released` PV does **not** automatically rebind. A fresh
-> install then provisions new, empty PVCs, leaving your old data stranded on the
-> retained PV.
->
-> To reattach retained data on reinstall, clear the stale `claimRef` on each PV
-> so it can bind to the new PVC:
->
-> ```console
-> kubectl patch pv jellyfin-config --type=json -p='[{"op":"remove","path":"/spec/claimRef"}]'
-> ```
->
-> To delete the data permanently, remove the PVCs (and, for `Retain` PVs, the
-> PVs as well):
->
-> ```console
-> kubectl -n jellyfin delete pvc -l app.kubernetes.io/instance=jellyfin
-> ```
+This does not remove the PVCs. Delete them if you also want to discard the data:
+
+```console
+kubectl -n jellyfin delete pvc -l app.kubernetes.io/instance=jellyfin
+```
 
 ## Configuration
 
