@@ -28,9 +28,13 @@ helm upgrade --install jellyfin jellyfin/jellyfin --namespace jellyfin --create-
 
 ## Upgrading
 
-Upgrades from **0.4.2 or earlier to 0.4.3+** require a one-time manual step.
+### Upgrading to 0.5.0 from 0.4.x
 
-Those older versions included the chart and app version labels
+This release bundles several fixes. Two of them need your attention before upgrading.
+
+#### 1. The StatefulSet must be recreated once (selector fix)
+
+Versions **0.4.2 and earlier** included the chart and app version labels
 (`helm.sh/chart`, `app.kubernetes.io/version`) in the StatefulSet's
 `spec.selector.matchLabels`. Because a StatefulSet's selector is immutable, any
 release that changed the chart or Jellyfin version changed the selector and made
@@ -43,7 +47,7 @@ invalid: spec: Forbidden: updates to statefulset spec for fields other than
 'persistentVolumeClaimRetentionPolicy' and 'minReadySeconds' are forbidden
 ```
 
-0.4.3 fixes this by using only the stable `app.kubernetes.io/name` and
+This release uses only the stable `app.kubernetes.io/name` and
 `app.kubernetes.io/instance` labels in the selector. Because the selector still
 differs from what older releases deployed, you must recreate the StatefulSet
 once. Delete it with `--cascade=orphan` so the running pod, PVCs, and your data
@@ -56,3 +60,13 @@ helm upgrade --install jellyfin jellyfin/jellyfin --namespace jellyfin --create-
 ```
 
 Subsequent upgrades work normally with no manual steps.
+
+#### 2. `persistence.*.enabled` has been removed
+
+Earlier versions exposed `persistence.config.enabled` and
+`persistence.cache.enabled` with a comment claiming that setting them to `false`
+would fall back to an `emptyDir`. That never worked — a PVC was always created
+regardless of the flag. The flag has been removed. Jellyfin's config and cache
+are stateful and are always persisted.
+
+If your values file sets either key, delete it. No behavior changes as a result.
