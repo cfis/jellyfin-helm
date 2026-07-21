@@ -173,8 +173,11 @@ ingress:
   # -- Ingress path type
   pathType: Prefix
 
-  # -- Enable TLS configuration for the hostname defined at apiIngress.hostname parameter
-  tls: true
+  # -- Enable TLS for `host`. When true, `tlsSecret` names the Secret holding the certificate
+  #    (leave the default and use cert-manager annotations to have it created automatically).
+  tls: false
+  # -- Name of the TLS Secret for `host`. Defaults to `<fullname>-tls` when empty.
+  tlsSecret: ""
 
 networkPolicy:
   # -- Enable the default NetworkPolicy policy
