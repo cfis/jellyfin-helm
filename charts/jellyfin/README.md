@@ -167,6 +167,19 @@ them with `--set key=value` or a custom `-f values.yaml`.
 | `ingress.tls` | bool | `false` | Enable TLS for `host`. |
 | `ingress.tlsSecret` | string | `""` | TLS Secret name. Defaults to `<fullname>-tls` when empty. |
 
+### Gateway API
+
+An alternative to `ingress` using a Gateway API `HTTPRoute`. Requires the Gateway
+API CRDs and an existing `Gateway` to attach to.
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `gateway.enabled` | bool | `false` | Create an `HTTPRoute` for Jellyfin. |
+| `gateway.annotations` | object | `{}` | Annotations for the HTTPRoute. |
+| `gateway.parentRefs` | list | `[]` | References to the Gateway(s) the route attaches to. |
+| `gateway.hostnames` | list | `[jellyfin.local]` | Hostnames the route matches. |
+| `gateway.path` | string | `/` | Path prefix to match. |
+
 ### NetworkPolicy
 
 | Key | Type | Default | Description |
