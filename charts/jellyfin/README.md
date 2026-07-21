@@ -4,6 +4,10 @@
 
 - [Introduction](#introduction)
 - [Installation](#prerequisites)
+- [Accessing Jellyfin](#accessing-jellyfin)
+- [Mounting media libraries](#mounting-media-libraries)
+- [Testing the deployment](#testing-the-deployment)
+- [Uninstalling](#uninstalling)
 - [Configuration](#configuration)
 - [Upgrading](#upgrading)
 
@@ -14,8 +18,13 @@ Kubernetes cluster. Jellyfin is a volunteer built, open-source media server.
 
 ## Prerequisites
 
-- [Helm](https://helm.sh)
-- A [Kubernetes](https://kubernetes.io/releases/) cluster with persistent storage 
+- [Helm](https://helm.sh) 3
+- A [Kubernetes](https://kubernetes.io/releases/) cluster with a dynamic
+  provisioner (a default `StorageClass`), or pre-provisioned `PersistentVolume`s.
+  The chart creates PVCs for config and cache via `volumeClaimTemplates`; set
+  `persistence.config.storageClassName` / `persistence.cache.storageClassName`
+  if you don't want the cluster default.
+- An Ingress controller, only if you enable `ingress`.
 
 ## Installation
 
@@ -26,6 +35,88 @@ helm repo add jellyfin https://cfis.github.io/jellyfin-helm
 
 helm upgrade --install jellyfin jellyfin/jellyfin --namespace jellyfin --create-namespace
 ```
+
+## Accessing Jellyfin
+
+The Service is headless (`clusterIP: None`) and no Ingress is created by default,
+so the quickest way to reach a fresh install is a port-forward:
+
+```console
+kubectl -n jellyfin port-forward svc/jellyfin 8096:80
+```
+
+Then open <http://localhost:8096>. For permanent external access, enable and
+configure the [ingress](#service--ingress) values instead.
+
+> **Note:** DLNA relies on multicast discovery on the local network. Because the
+> Service is a headless `ClusterIP`, DLNA auto-discovery will not work from your
+> LAN out of the box; the port is exposed for in-cluster use only.
+
+## Mounting media libraries
+
+Your media (movies, music, etc.) is mounted via `mediaVolumes`. Each key becomes a
+volume mounted at `/media/<key>` inside the pod. You can either have the chart
+provision a PVC, or reference an existing claim.
+
+```yaml
+mediaVolumes:
+  # Chart-provisioned PVC, mounted at /media/movies
+  movies:
+    storageClassName: ""
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 1Ti
+  # Reuse a PVC you already created, mounted at /media/music
+  music:
+    existingClaim: my-music-pvc
+```
+
+Point Jellyfin's library at `/media/movies`, `/media/music`, etc. when adding
+libraries in the web UI.
+
+## Testing the deployment
+
+The chart ships a Helm test that checks the web endpoint responds:
+
+```console
+helm test jellyfin --namespace jellyfin
+```
+
+## Uninstalling
+
+```console
+helm uninstall jellyfin --namespace jellyfin
+```
+
+> **Important — read this before relying on your data surviving a reinstall.**
+>
+> The PVCs created from `volumeClaimTemplates` (config, cache) and any
+> `mediaVolumes` PVCs are not part of the Helm release, so `helm uninstall`
+> leaves them in place.
+>
+> However, this chart is commonly used with **statically pre-provisioned PVs**
+> that use the `Retain` reclaim policy. With `Retain`, once a PVC is removed
+> (e.g. a namespace teardown or manual cleanup) the underlying PV and its data
+> are **kept**, but the PV moves to the `Released` state with a stale
+> `claimRef` — and a `Released` PV does **not** automatically rebind. A fresh
+> install then provisions new, empty PVCs, leaving your old data stranded on the
+> retained PV.
+>
+> To reattach retained data on reinstall, clear the stale `claimRef` on each PV
+> so it can bind to the new PVC:
+>
+> ```console
+> kubectl patch pv jellyfin-config --type=json -p='[{"op":"remove","path":"/spec/claimRef"}]'
+> ```
+>
+> To delete the data permanently, remove the PVCs (and, for `Retain` PVs, the
+> PVs as well):
+>
+> ```console
+> kubectl -n jellyfin delete pvc -l app.kubernetes.io/instance=jellyfin
+> ```
 
 ## Configuration
 
