@@ -154,7 +154,8 @@ mediaVolumes: {}
 serviceAccount:
   create: false
   annotations: {}
-  automount: true
+  # -- Jellyfin never calls the Kubernetes API, so don't mount its token.
+  automount: false
 
 service:
   webport: 80
