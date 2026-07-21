@@ -88,7 +88,7 @@ spec:
         - name: tmpfs
           emptyDir:
             medium: Memory
-            sizeLimit: 10Mi
+            sizeLimit: {{ .Values.tmpfs.sizeLimit }}
         {{- range $name, $claim := .Values.mediaVolumes }}
           {{- if $claim.existingClaim }}
         - name: {{ include "jellyfin.fullname" $ }}-{{ $name }}

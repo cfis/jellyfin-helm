@@ -103,6 +103,13 @@ containerSecurityContext:
   runAsNonRoot: true
   runAsUser: 64710
 
+# tmpfs mounted at `/tmp`. The root filesystem is read-only, so this is the only
+# writable scratch space outside the PVCs.
+tmpfs:
+  # -- Size limit for the in-memory `/tmp` volume. Increase if transcoding or other
+  #    operations spill temporary files into `/tmp`.
+  sizeLimit: 10Mi
+
 # -- Persistent volumes mounted into the pod. Each key becomes a `volumeClaimTemplates`
 #    PVC mounted at `/<key>`. Persistence is always enabled; config and cache are stateful.
 persistence:
