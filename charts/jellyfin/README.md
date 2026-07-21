@@ -90,11 +90,7 @@ helm test jellyfin --namespace jellyfin
 helm uninstall jellyfin --namespace jellyfin
 ```
 
-This does not remove the PVCs. Delete them separately if you no longer need them:
-
-```console
-kubectl -n jellyfin delete pvc -l app.kubernetes.io/instance=jellyfin
-```
+This does not remove the PVCs; they are left in place.
 
 ## Configuration
 
