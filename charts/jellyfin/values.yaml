@@ -1,10 +1,4 @@
 # Default values for jellyfin
-global:
-  # -- Labels to apply to all resources.
-  commonLabels: {}
-  # -- Enable global debug mode
-  debug: false
-
 nameOverride: ""
 fullnameOverride: ""
 
