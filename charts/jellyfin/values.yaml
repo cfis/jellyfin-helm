@@ -21,7 +21,7 @@ image:
   pullPolicy: Always
   imagePullSecrets: []
 
-  # -- Additional annotations to apply to the pod.
+# -- Additional annotations to apply to the pod.
 podAnnotations: {}
 
 # -- Additional labels to be added to pods.
