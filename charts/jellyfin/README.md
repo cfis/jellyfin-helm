@@ -192,7 +192,7 @@ API CRDs and an existing `Gateway` to attach to.
 
 ## Upgrading
 
-### Upgrading to 0.5.0 from 0.4.x
+### Upgrading to 1.0.0 from 0.4.x
 
 This release bundles several fixes. Two of them need your attention before upgrading.
 

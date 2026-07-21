@@ -1,6 +1,19 @@
 apiVersion: v2
 name: jellyfin
-description: A Helm chart for Kubernetes
+description: A Helm chart for Jellyfin, the free software media system.
+icon: https://raw.githubusercontent.com/jellyfin/jellyfin-ux/master/branding/SVG/icon-transparent.svg
+home: https://jellyfin.org/
+sources:
+  - https://github.com/cfis/jellyfin-helm
+  - https://github.com/jellyfin/jellyfin
+keywords:
+  - jellyfin
+  - media
+  - media-server
+  - streaming
+maintainers:
+  - name: Charlie Savage
+    email: charlie.savage@privateer.com
 
 # A chart can be either an 'application' or a 'library' chart.
 #
@@ -15,7 +28,7 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.4.2
+version: 1.0.0
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
