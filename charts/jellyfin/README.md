@@ -4,6 +4,7 @@
 
 - [Introduction](#introduction)
 - [Installation](#prerequisites)
+- [Configuration](#configuration)
 - [Upgrading](#upgrading)
 
 ## Introduction
@@ -25,6 +26,91 @@ helm repo add jellyfin https://cfis.github.io/jellyfin-helm
 
 helm upgrade --install jellyfin jellyfin/jellyfin --namespace jellyfin --create-namespace
 ```
+
+## Configuration
+
+The following tables list the configurable parameters and their defaults. Override
+them with `--set key=value` or a custom `-f values.yaml`.
+
+### General
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `nameOverride` | string | `""` | Override the chart name used in resource names. |
+| `fullnameOverride` | string | `""` | Override the fully qualified release name. |
+
+### Image
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `image.registry` | string | `docker.io` | Image registry. |
+| `image.account` | string | `jellyfin` | Registry account/namespace. |
+| `image.name` | string | `jellyfin` | Image repository name. |
+| `image.tag` | string | _chart `appVersion`_ | Image tag. Defaults to the chart's `appVersion` when unset. |
+| `image.pullPolicy` | string | `IfNotPresent` | Image pull policy. |
+| `image.imagePullSecrets` | list | `[]` | Secrets used to pull the image. |
+
+### Workload
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `podAnnotations` | object | `{}` | Additional annotations on the pod. |
+| `podLabels` | object | `{}` | Additional labels on the pod. |
+| `strategy` | object | `{}` | StatefulSet `updateStrategy` (`RollingUpdate` or `OnDelete`). |
+| `nodeSelector` | object | `{kubernetes.io/os: linux}` | Node selector for pod assignment. |
+| `affinity` | object | `{}` | Pod affinity rules. |
+| `tolerations` | list | `[]` | Pod tolerations. |
+| `topologySpreadConstraints` | list | `[]` | Topology spread constraints. |
+| `resources.jellyfin.requests` | object | `{cpu: 500m, memory: 512Mi}` | Container resource requests. |
+| `resources.jellyfin.limits` | object | `{cpu: "2", memory: 6Gi}` | Container resource limits. |
+| `podSecurityContext` | object | runs as UID/GID `64710`, non-root, `RuntimeDefault` seccomp | Pod-level security context. |
+| `containerSecurityContext` | object | drops all caps, read-only root FS, no privilege escalation, UID/GID `64710` | Container-level security context. |
+
+### Storage
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `tmpfs.sizeLimit` | string | `10Mi` | Size of the in-memory `/tmp` volume (root FS is read-only). |
+| `persistence.config.storageClassName` | string | `nil` (cluster default) | StorageClass for the config PVC. |
+| `persistence.config.accessModes` | list | `[ReadWriteOnce]` | Access modes for the config PVC. |
+| `persistence.config.resources.requests.storage` | string | `250Mi` | Size of the config PVC. |
+| `persistence.cache.storageClassName` | string | `nil` (cluster default) | StorageClass for the cache PVC. |
+| `persistence.cache.accessModes` | list | `[ReadWriteOnce]` | Access modes for the cache PVC. |
+| `persistence.cache.resources.requests.storage` | string | `2Gi` | Size of the cache PVC. |
+| `mediaVolumes` | object | `{}` | Additional PVCs mounted under `/media/<key>` (e.g. movies, music). |
+
+### ServiceAccount
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `serviceAccount.create` | bool | `false` | Create a dedicated ServiceAccount. |
+| `serviceAccount.annotations` | object | `{}` | Annotations for the ServiceAccount. |
+| `serviceAccount.automount` | bool | `false` | Mount the SA token in the pod (Jellyfin doesn't use the K8s API). |
+
+### Service & Ingress
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `service.webport` | int | `80` | Service port for the web UI. |
+| `service.dlnaport` | int | `1900` | Service port for DLNA. |
+| `ingress.enabled` | bool | `false` | Create an Ingress resource. |
+| `ingress.className` | string | `""` | IngressClass name. |
+| `ingress.annotations` | object | `{}` | Ingress annotations (e.g. cert-manager). |
+| `ingress.host` | string | `jellyfin.local` | Hostname to route. |
+| `ingress.path` | string | `/` | Ingress path. |
+| `ingress.pathType` | string | `Prefix` | Ingress path type. |
+| `ingress.tls` | bool | `false` | Enable TLS for `host`. |
+| `ingress.tlsSecret` | string | `""` | TLS Secret name. Defaults to `<fullname>-tls` when empty. |
+
+### NetworkPolicy
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `networkPolicy.enabled` | bool | `false` | Create a NetworkPolicy for the pod. |
+| `networkPolicy.allowExternal` | bool | `true` | Allow inbound from any source. When `false`, only pods labelled `<fullname>-client: "true"`. |
+| `networkPolicy.allowAllOutbound` | bool | `true` | Allow all egress. When `false`, only DNS plus `networkPolicy.egress`. |
+| `networkPolicy.ingress` | list | `[]` | Extra ingress rules appended to the policy. |
+| `networkPolicy.egress` | list | `[]` | Extra egress rules (used when `allowAllOutbound` is `false`). |
 
 ## Upgrading
 
