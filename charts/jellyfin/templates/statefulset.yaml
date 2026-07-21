@@ -45,11 +45,15 @@ spec:
             - name: dlna
               containerPort: 1900
               protocol: UDP
-          livenessProbe:
+          startupProbe:
             httpGet: &httpProbe
               port: http
               path: /health
-            initialDelaySeconds: 30
+            # Allow up to ~5 minutes for the first start (library scan, migrations).
+            periodSeconds: 10
+            failureThreshold: 30
+          livenessProbe:
+            httpGet: *httpProbe
             periodSeconds: 30
             timeoutSeconds: 10
           readinessProbe:
