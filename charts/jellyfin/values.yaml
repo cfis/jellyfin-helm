@@ -20,16 +20,16 @@ podLabels: {}
 #    NOTE: replicaCount are "disabled" because Jellyfin currently not handle HA
 # replicaCount: 1
 
-# -- Set up update strategy for jellyfin installation. Set to `Recreate` if you use persistent volume
-#    that cannot be mounted by more than one pods to make sure the pods is destroyed first.
-#    (https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy)
+# -- StatefulSet update strategy. Maps directly to `spec.updateStrategy`. Valid types are
+#    `RollingUpdate` (default) and `OnDelete`. Note: a StatefulSet does not support the
+#    Deployment-style `Recreate` type or `maxSurge`.
+#    (https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies)
 strategy: {}
 # example:
 #   strategy:
 #     type: RollingUpdate
 #     rollingUpdate:
-#       maxSurge: 25%
-#       maxUnavailable: 25%
+#       maxUnavailable: 1
 
 # -- Node labels for pod assignment
 nodeSelector:
