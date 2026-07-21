@@ -7,7 +7,7 @@ image:
   account: jellyfin
   name: jellyfin
   #tag: # Defaults .Chart.AppVersion 
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   imagePullSecrets: []
 
 # -- Additional annotations to apply to the pod.
