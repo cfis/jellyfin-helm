@@ -43,18 +43,26 @@ spec:
               containerPort: 8096
               protocol: TCP
           startupProbe:
-            httpGet: &httpProbe
+            httpGet:
               port: http
               path: /health
             # Allow up to ~5 minutes for the first start (library scan, migrations).
             periodSeconds: 10
             failureThreshold: 30
           livenessProbe:
-            httpGet: *httpProbe
+            httpGet:
+              port: http
+              path: /health
             periodSeconds: 30
             timeoutSeconds: 10
           readinessProbe:
-            httpGet: *httpProbe
+            # /health returns 200 (Degraded) while Jellyfin's temporary setup server
+            # runs during startup and migrations. /System/Ping is only served by the
+            # real server (the setup server returns 503), so the pod becomes Ready
+            # only once Jellyfin can serve requests.
+            httpGet:
+              port: http
+              path: /System/Ping
             periodSeconds: 10
             timeoutSeconds: 10
           resources: {{- toYaml .Values.resources.jellyfin | nindent 12 }}
