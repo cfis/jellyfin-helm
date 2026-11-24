@@ -135,7 +135,7 @@ them with `--set key=value` or a custom `-f values.yaml`.
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| `tmpfs.sizeLimit` | string | `10Mi` | Size of the in-memory `/tmp` volume (root FS is read-only). |
+| `tmp.sizeLimit` | string | `""` (no limit) | Size limit for the disk-backed `/tmp` volume (root FS is read-only). SQLite needs about the size of `jellyfin.db` here when optimizing. |
 | `persistence.config.storageClassName` | string | `nil` (cluster default) | StorageClass for the config PVC. |
 | `persistence.config.accessModes` | list | `[ReadWriteOnce]` | Access modes for the config PVC. |
 | `persistence.config.resources.requests.storage` | string | `250Mi` | Size of the config PVC. |
@@ -191,6 +191,20 @@ API CRDs and an existing `Gateway` to attach to.
 | `networkPolicy.egress` | list | `[]` | Extra egress rules (used when `allowAllOutbound` is `false`). |
 
 ## Upgrading
+
+### Upgrading to 2.0.0 from 1.x
+
+This release upgrades Jellyfin from 10.11 to 12.4. Jellyfin 12.0 migrates its
+database on first start and cannot be rolled back without restoring a backup.
+Before upgrading, follow Jellyfin's
+[Notes on Updating](https://github.com/jellyfin/jellyfin/releases/tag/v12.0)
+in the 12.0 release notes.
+
+`tmpfs.sizeLimit` has been replaced by `tmp.sizeLimit`. `/tmp` was a 10Mi
+in-memory volume, which is too small for SQLite to optimize the database (it
+failed with `database or disk is full`). It is now backed by the node's disk
+with no size limit by default. If your values file sets `tmpfs.sizeLimit`,
+remove it or rename it to `tmp.sizeLimit`.
 
 ### Upgrading to 1.0.0 from 0.4.x
 

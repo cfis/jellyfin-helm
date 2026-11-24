@@ -71,7 +71,7 @@ spec:
               mountPath: /media/{{ $name }}
             {{- end }}
             # See note below why we need to do this
-            - name: tmpfs
+            - name: tmp
               mountPath: /tmp
       {{- with .Values.nodeSelector }}
       nodeSelector: {{- toYaml . | nindent 8 }}
@@ -85,10 +85,13 @@ spec:
       volumes:
         # The docker image does not have a /tmp directory, but we want to disable
         # writing to the root file system. Thus we have to create a /tmp directory ourselves
-        - name: tmpfs
+        - name: tmp
+          {{- if .Values.tmp.sizeLimit }}
           emptyDir:
-            medium: Memory
-            sizeLimit: {{ .Values.tmpfs.sizeLimit }}
+            sizeLimit: {{ .Values.tmp.sizeLimit }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
         {{- range $name, $claim := .Values.mediaVolumes }}
           {{- if $claim.existingClaim }}
         - name: {{ include "jellyfin.fullname" $ }}-{{ $name }}
