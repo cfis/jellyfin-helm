@@ -3,6 +3,28 @@ entries:
   jellyfin:
   - apiVersion: v2
     appVersion: "12.4"
+    created: "2026-11-24T08:48:15.251105754Z"
+    description: A Helm chart for Jellyfin, the free software media system.
+    digest: 4550e7db0f781cb7ac1e61fa2e46ae2f05381bdd6e090615547bb772d7697c58
+    home: https://jellyfin.org/
+    icon: https://raw.githubusercontent.com/jellyfin/jellyfin-ux/master/branding/SVG/icon-transparent.svg
+    keywords:
+    - jellyfin
+    - media
+    - media-server
+    - streaming
+    maintainers:
+    - name: Charlie Savage
+    name: jellyfin
+    sources:
+    - https://github.com/cfis/jellyfin-helm
+    - https://github.com/jellyfin/jellyfin
+    type: application
+    urls:
+    - https://github.com/cfis/jellyfin-helm/releases/download/jellyfin-2.1.0/jellyfin-2.1.0.tgz
+    version: 2.1.0
+  - apiVersion: v2
+    appVersion: "12.4"
     created: "2026-11-24T06:21:05.166693951Z"
     description: A Helm chart for Jellyfin, the free software media system.
     digest: bc559600fed14a9a02e7b5fb1d1615c0593abd8fdd6197122b8d904551586c57
@@ -96,4 +118,4 @@ entries:
     urls:
     - https://github.com/cfis/jellyfin-helm/releases/download/jellyfin-0.3.0/jellyfin-0.3.0.tgz
     version: 0.3.0
-generated: "2026-11-24T06:21:05.166730339Z"
+generated: "2026-11-24T08:48:15.251121999Z"
