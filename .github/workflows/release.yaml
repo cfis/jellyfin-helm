@@ -1,12 +1,15 @@
 name: Release Charts
 
+# Release only after "Lint and Test Charts" passes for a push to main.
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["Lint and Test Charts"]
+    types: [completed]
+    branches: [main]
 
 jobs:
   release:
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -15,6 +18,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Configure Git
         run: |

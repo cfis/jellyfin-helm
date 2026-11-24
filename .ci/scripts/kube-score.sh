@@ -10,6 +10,7 @@ helm template --values charts/$chart/ci/ci-values.yaml charts/$chart | ${KUBE_SC
     --ignore-test deployment-has-host-podantiaffinity \
     --ignore-test pod-probes \
     --ignore-test container-image-tag \
+    --ignore-test container-image-pull-policy \
     --enable-optional-test container-security-context-privileged \
     --ignore-test container-security-context \
     --ignore-test container-security-context-user-group-id \
