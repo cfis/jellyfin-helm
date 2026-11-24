@@ -12,9 +12,5 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
-    - port: {{ .Values.service.dlnaport }}
-      targetPort: dlna
-      protocol: UDP
-      name: dlna
   selector:
     {{- include "jellyfin.selectorLabels" . | nindent 4 }}

@@ -13,12 +13,10 @@ spec:
     - Ingress
     - Egress
   ingress:
-    # Allow inbound traffic to the Jellyfin ports.
+    # Allow inbound traffic to the Jellyfin web port.
     - ports:
         - port: 8096
           protocol: TCP
-        - port: 1900
-          protocol: UDP
       {{- if not .Values.networkPolicy.allowExternal }}
       # Restrict to pods explicitly labelled as clients.
       from:

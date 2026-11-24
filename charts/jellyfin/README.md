@@ -48,9 +48,10 @@ kubectl -n jellyfin port-forward svc/jellyfin 8096:80
 Then open <http://localhost:8096>. For permanent external access, enable and
 configure the [ingress](#service--ingress) values instead.
 
-> **Note:** DLNA relies on multicast discovery on the local network. Because the
-> Service is a headless `ClusterIP`, DLNA auto-discovery will not work from your
-> LAN out of the box; the port is exposed for in-cluster use only.
+> **Note:** DLNA is not supported. DLNA discovery uses multicast on the local
+> network, which only reaches the pod with host networking, and the chart doesn't
+> enable that. Use the Jellyfin apps instead. If you want DLNA functionality
+> in the future please [open an issue](https://github.com/cfis/jellyfin-helm/issues).
 
 ## Mounting media libraries
 
@@ -157,7 +158,6 @@ them with `--set key=value` or a custom `-f values.yaml`.
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | `service.webport` | int | `80` | Service port for the web UI. |
-| `service.dlnaport` | int | `1900` | Service port for DLNA. |
 | `ingress.enabled` | bool | `false` | Create an Ingress resource. |
 | `ingress.className` | string | `""` | IngressClass name. |
 | `ingress.annotations` | object | `{}` | Ingress annotations (e.g. cert-manager). |
