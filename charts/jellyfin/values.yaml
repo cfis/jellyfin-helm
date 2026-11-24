@@ -154,7 +154,6 @@ serviceAccount:
 
 service:
   webport: 80
-  dlnaport: 1900 
  
 ingress:
   # -- Enable ingress resource

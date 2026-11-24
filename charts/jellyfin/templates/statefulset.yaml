@@ -42,9 +42,6 @@ spec:
             - name: http
               containerPort: 8096
               protocol: TCP
-            - name: dlna
-              containerPort: 1900
-              protocol: UDP
           startupProbe:
             httpGet: &httpProbe
               port: http
