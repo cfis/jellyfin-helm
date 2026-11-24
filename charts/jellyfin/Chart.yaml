@@ -13,7 +13,6 @@ keywords:
   - streaming
 maintainers:
   - name: Charlie Savage
-    email: charlie.savage@privateer.com
 
 # A chart can be either an 'application' or a 'library' chart.
 #
